@@ -53,10 +53,12 @@ class Map:
         print()
         print()
 
-    def update_cell(self, x, y):
-        """ Update a cell.
+    def get_next_cell_state(self, x, y):
+        """ Calculate the next state of a cell based on its current neighbors.
+            Used for updating the map without letting the iterative method of
+            updating to influence the cell updates.
 
-            Returns the cell's new state
+            Returns the cell's next state
 
             Variables:
             x       int     X coordinate of the cell
@@ -73,10 +75,11 @@ class Map:
             , (x, y+1)
             , (x+1, y+1)
         ]
-        alive = 0
-        low_threshold = 0
-        high_threshold = 2
         state = False
+        alive = 0
+        low_death_threshold = 2
+        high_death_threshold = 3
+        born_number = 3
 
         # Find the cell's neighbors
         for coordinate in neighbor_coordinates:
@@ -91,11 +94,22 @@ class Map:
             if cell is True:
                 alive += 1
         
-        # Update the current cell based on the neighbors' states
-        if alive > high_threshold or alive < low_threshold:
-            self.set_cell(x, y, False)
+        # return the current cell's next state based on the neighbors' states
+        state = self.get_cell(x, y)
+        if alive > high_death_threshold or alive < low_death_threshold:
+            # The cell dies from over or undercrowding
+            return False
         else:
-            self.set_cell(x, y, True)
+            if state:
+                # The cell continues to live, no change
+                return True
+            else:
+                if alive == born_number:
+                    # Create a new cell
+                    return True
+                else:
+                    # The cell is dead and remains dead, no change
+                    return False
 
     def update_cells(self):
         """ Update the map. """
@@ -108,4 +122,4 @@ class Map:
             x = -1
             for cell in row:
                 x += 1
-                self.update_cell(x, y)
+                self.set_cell(x, y, self.get_next_cell_state(x, y))

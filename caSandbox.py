@@ -1,7 +1,9 @@
 import map
+import time
 
 m = map.Map()
 
-m.print_cells()
-m.update_cells()
-m.print_cells()
+while True:
+    m.print_cells()
+    m.update_cells()
+    time.sleep(0.5)
