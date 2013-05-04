@@ -4,11 +4,11 @@ class Map:
     def __init__(self):
         # This array is the map itself. Later this will be loaded from a file.
         self.cells = [
-            [False, False, False, False, True]
-            , [False, True, False, False, False]
+              [False, False, False, False, False]
             , [False, False, True, False, False]
-            , [False, True, True, False, True]
-            , [True, False, False, False, False]
+            , [False, False, True, False, False]
+            , [False, False, True, False, False]
+            , [False, False, False, False, False]
         ]
 
     def get_cell(self, x, y):
@@ -100,7 +100,7 @@ class Map:
             # The cell dies from over or undercrowding
             return False
         else:
-            if state:
+            if state is True:
                 # The cell continues to live, no change
                 return True
             else:
@@ -116,10 +116,24 @@ class Map:
         # The coordinates will change to (0, 0) on the first iteration
         x = -1
         y = -1
+        i = 0
+        new_cells = []
 
+        # Generate the new cell states
         for row in self.cells:
             y += 1
             x = -1
             for cell in row:
                 x += 1
-                self.set_cell(x, y, self.get_next_cell_state(x, y))
+                new_cells.append(self.get_next_cell_state(x, y))
+
+        # Set the current cells to the states just generated
+        x = -1
+        y = -1
+        for row in self.cells:
+            y += 1
+            x = -1
+            for cell in row:
+                x += 1
+                self.set_cell(x, y, new_cells[i])
+                i += 1
