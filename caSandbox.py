@@ -1,7 +1,7 @@
 import map
 import time
 
-m = map.Map()
+m = map.Map("data/test_data.txt")
 
 while True:
     m.print_cells()

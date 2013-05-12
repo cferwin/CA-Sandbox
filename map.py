@@ -1,15 +1,51 @@
 import sys
 
 class Map:
-    def __init__(self):
-        # This array is the map itself. Later this will be loaded from a file.
-        self.cells = [
-              [False, False, False, False, False]
-            , [False, False, True, False, False]
-            , [False, False, True, False, False]
-            , [False, False, True, False, False]
-            , [False, False, False, False, False]
-        ]
+    def __init__(self, path):
+        # This array is the map itself. This can be loaded from a file using
+        # load().
+        self.cells = []
+        # Load the file specified
+        self.load_file(path)
+
+    def load_file(self, path):
+        """ Load a file of 1's and 0's representing the map's cells
+            
+            Sets self.cells to the cell data represented
+
+            Variables:
+            path    string  Path to the data file
+        """
+
+        # Try to open the data file
+        try:
+            f = open(path, 'r')
+        except OSError:
+            print("Error: File at", path, "could not be opened.")
+            exit(1)
+        except:
+            print("Error: something went wrong opening the file at", path)
+            exit(1)
+
+        # Parse the file's contents
+        for line in f:
+            line = line.strip()
+
+            if line[:2] == "//":
+                # Don't parse comments
+                pass
+            else:
+                # Create a new row
+                self.cells.append([])
+
+                # Load the cells
+                for char in line:
+                    if char == '0':
+                        # Dead cell
+                        self.cells[-1].append(False)
+                    elif char == '1':
+                        # Alive cell
+                        self.cells[-1].append(True)
 
     def get_cell(self, x, y):
         """ Get the state of a cell.
@@ -66,13 +102,13 @@ class Map:
         """
         neighbors = []
         neighbor_coordinates = [
-            (x+1, y)
+              (x+1, y)
             , (x+1, y-1)
-            , (x, y-1)
+            , (x,   y-1)
             , (x-1, y-1)
             , (x-1, y)
             , (x-1, y+1)
-            , (x, y+1)
+            , (x,   y+1)
             , (x+1, y+1)
         ]
         state = False
