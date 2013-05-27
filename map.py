@@ -2,8 +2,8 @@ import sys
 
 class Map:
     def __init__(self, path):
-        # This array is the map itself. This can be loaded from a file using
-        # load().
+        # This array is the map itself. It can be loaded from a file using
+        # load_file().
         self.cells = []
         # Load the file specified
         self.load_file(path)
@@ -56,10 +56,29 @@ class Map:
             x       int     X coordinate of the cell
             y       int     Y coordinate of the cell
         """
-        if x < 0 or y < 0:
-            raise IndexError
 
-        return self.cells[x][y]
+        # Far boundaries of the map
+        max_y = len(self.cells)-1
+        def max_x(y):
+            return len(self.cells[y])-1
+
+        # Correct Y coordinate
+        if y > max_y:
+            # Y is off the bottom edge of the map
+            y -= max_y + 1
+        elif y < 0:
+            # Y is off the top edge of the map
+            y += max_y + 1
+
+        # Correct X coordinate
+        if x > max_x(y):
+            # X is off the right edge of the map
+            x -= max_x(y) + 1
+        elif x < 0:
+            # X is off the left edge of the map
+            x += max_x(y) + 1
+
+        return self.cells[y][x]
 
     def set_cell(self, x, y, state):
         """ Set the state of a cell.
@@ -71,9 +90,9 @@ class Map:
             y       int     Y coordinate of the cell
             state   bool    The cell's new state
         """
-        self.cells[x][y] = state
+        self.cells[y][x] = state
 
-        return self.cells[x][y]
+        return self.cells[y][x]
 
     def print_cells(self):
         """ Prints the entire map to the screen. """
