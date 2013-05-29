@@ -16,12 +16,10 @@ curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
 # Initialize the map
 m = map.Map(screen, "data/test_data.txt")
 
-i = 0
-
 while True:
     # Check for exit key
     char = screen.getch()
-    if char == ord('q'):
+    if char != -1:
         break
 
     # Advance the simulation
