@@ -1,7 +1,18 @@
-import sys
+import curses
 
 class Map:
-    def __init__(self, path):
+    def __init__(self, screen, path):
+        """ Initialize the map.
+            
+            Variables:
+            screen  object  A Curses screen
+            path    string  The path to the data file to be loaded
+        """
+
+        self.screen = screen
+        if curses.has_colors():
+            curses.start_color()
+
         # This array is the map itself. It can be loaded from a file using
         # load_file().
         self.cells = []
@@ -94,19 +105,41 @@ class Map:
 
         return self.cells[y][x]
 
-    def print_cells(self):
-        """ Prints the entire map to the screen. """
+    def print_cells(self, x=0, y=0, refresh=True, live_color_pair=1, dead_color_pair=2):
+        """ Prints the entire map to the screen.
+            
+            Variables
+            x                   int     X coordinate of the top-left corner of the map
+            y                   int     Y coordinate of the top-left corner of the map
+            refresh             bool    Should the screen be refreshed after
+                                        the function has finished
+            live_color_pair     int     ID of the curses color pair used for
+                                        printing live cells
+            dead_color_pair     int     ID of the curses color pair used for
+                                        printing dead cells
+        """
+        x_start = x - 1
+        y_start = y - 1
+
         for row in self.cells:
+            # Update the screen coordinates
+            x = x_start
+            y += 1
+
             for cell in row:
+                x += 1
+
+                self.screen.move(y, x)
+
                 if cell is True:
-                    sys.stdout.write('#')
+                    self.screen.addch('#', curses.color_pair(live_color_pair))
                 elif cell is False:
-                    sys.stdout.write('O')
+                    self.screen.addch('O', curses.color_pair(dead_color_pair))
                 else:
-                    sys.stdout.write('!')
-            sys.stdout.write('\n')
-        print()
-        print()
+                    self.screen.addch('!')
+
+        if refresh:
+            self.screen.refresh()
 
     def get_next_cell_state(self, x, y):
         """ Calculate the next state of a cell based on its current neighbors.
